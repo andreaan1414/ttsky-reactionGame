@@ -26,6 +26,7 @@ project:
     - "flash.v"
     - "reaction_fsm.v"
     - "top_reaction.v"
+    - "hex7seg.v"
 
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
