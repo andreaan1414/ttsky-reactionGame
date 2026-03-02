@@ -179,7 +179,7 @@ async def test_03_lfsr(dut):
     samples = set()
     for _ in range(20):
         await RisingEdge(dut.clk)
-        val = int(dut.user_project.game.lfsr_inst.rnd.value)
+        val = int(dut.user_project.fsm.lfsr_inst.rnd.value)
         assert val != 0, "LFSR is stuck at zero!"
         samples.add(val)
 
@@ -286,7 +286,7 @@ async def test_07_display_shows_time(dut):
     # Wait for flash_out=0 so segments are unmasked
     for _ in range(FLASH_HALF * 3):
         await RisingEdge(dut.clk)
-        if int(dut.user_project.game.flash_inst.flash_out.value) == 0:
+        if int(dut.user_project.fsm.flash_inst.flash_out.value) == 0:
             break
 
     seg = int(dut.uo_out.value)
