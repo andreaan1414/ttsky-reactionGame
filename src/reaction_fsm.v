@@ -45,7 +45,7 @@
   `define _FLASH 12_500_000
 `endif
 
-module reaction_game #(
+module reaction_fsm #(
     parameter TICK_PERIOD    = `_TICK,
     parameter WAIT_BLINK_PER = `_BLINK,
     parameter FLASH_HALF     = `_FLASH
