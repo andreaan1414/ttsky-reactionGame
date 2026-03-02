@@ -116,7 +116,7 @@ module reaction_game #(
   
     wire flash_out;
 
-    flash_ctrl #(
+    flash #(
         .HALF_PERIOD(FLASH_HALF)
     ) flash_inst (
         .clk      (clk),
