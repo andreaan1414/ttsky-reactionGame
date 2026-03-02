@@ -8,33 +8,44 @@
 `default_nettype none
 
 module tt_um_andreaan1414_top_reaction (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered
-    input  wire       clk,      // 25 MHz Tiny Tapeout clock
-    input  wire       rst_n     // active-low reset
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
+    input  wire       ena,
+    input  wire       clk,
+    input  wire       rst_n
 );
-
-    // Convert active low reset to active high
+    // rst_n is active-low on TT; our FSM uses active-high rst
     wire rst = ~rst_n;
 
-    // Bidirectional pins where not used
-    assign uio_out = 8'b0;
-    assign uio_oe  = 8'b0;
+    // Bidir pin directions: top 4 = outputs (LEDs), bottom 4 = unused inputs
+    assign uio_oe = 8'b1111_0000;
 
- // this is the fsm 
+    // Bottom 4 bidir outputs unused
+    assign uio_out[3:0] = 4'b0000;
+
+    // Game core
+    wire [3:0] led_out;
+    wire [7:0] seg_out;
+
     reaction_game game (
-        .clk      (clk),
-        .rst      (rst),
-        .go_btn   (ui_in[0]),
-        .react_btn(ui_in[1]),
-        .leds     (uo_out)
+        .clk    (clk),
+        .rst    (rst),
+        .btn_in (ui_in[7:4]),    
+        .led_out(led_out),     
+        .seg_out(seg_out)        
     );
 
-    
-    wire _unused = &{ena, uio_in, ui_in[7:2], 1'b0};
+    // Wire LEDs to upper bidir outputs
+    assign uio_out[7:4] = led_out;
+
+    // Wire 7-seg to dedicated outputs
+    assign uo_out = seg_out;
+
+    // Suppress unused input warnings
+    wire _unused = &{ena, uio_in, ui_in[3:0], 1'b0};
 
 endmodule
+
