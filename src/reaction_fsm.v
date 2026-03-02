@@ -194,7 +194,7 @@ module reaction_game #(
 
     // Segment encoding
     wire [6:0] digit_segs;
-    seg7_encoder seg_enc (
+    hex7seg seg_enc (
         .digit(display_digit),
         .segs (digit_segs)
     );
