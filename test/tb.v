@@ -51,12 +51,10 @@
 
 
 // stuff above is from teh template
-
-
-
 `default_nettype none
 `timescale 1ns / 1ps
 
+/* Testbench adapter — wires up TT interface for cocotb test.py */
 module tb ();
 
   initial begin
@@ -65,7 +63,6 @@ module tb ();
     #1;
   end
 
-  // Wire up the inputs and outputs:
   reg        clk;
   reg        rst_n;
   reg        ena;
