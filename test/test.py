@@ -86,13 +86,17 @@ async def test_hex7seg(dut):
         assert int(enc.segs.value) == pattern, f"7-seg mismatch for {digit}"
     dut._log.info("Hex7Seg verified")
 
+
 @cocotb.test()
 async def test_counter(dut):
-    cnt = dut.user_project.game.react_counter
-    # Drive internal reset directly
-    cnt.rst.value = 1
+    # Reset the WHOLE system to ensure sub-modules are cleared
+    dut.rst_n.value = 0
     await ClockCycles(dut.clk, 2)
-    cnt.rst.value = 0
+    dut.rst_n.value = 1
+    
+    # Path: user_project -> game -> react_counter
+    cnt = dut.user_project.game.react_counter
+    
     cnt.LD.value = 0
     cnt.UP.value = 1
     cnt.DW.value = 0
@@ -100,16 +104,17 @@ async def test_counter(dut):
     for i in range(5):
         await RisingEdge(dut.clk)
     
-    assert int(cnt.Q.value) == 5, f"Counter failed, got {cnt.Q.value}"
+    assert int(cnt.Q.value) == 5, f"Counter failed, expected 5, got {cnt.Q.value}"
     dut._log.info("Counter verified")
 
 @cocotb.test()
 async def test_lfsr(dut):
-    lfsr = dut.user_project.game.lfsr_inst
-    # Drive internal reset directly
-    lfsr.rst.value = 1
+    # Reset the WHOLE system
+    dut.rst_n.value = 0
     await ClockCycles(dut.clk, 2)
-    lfsr.rst.value = 0
+    dut.rst_n.value = 1
+    
+    lfsr = dut.user_project.game.lfsr_inst
     
     val1 = int(lfsr.rnd.value)
     await RisingEdge(dut.clk)
