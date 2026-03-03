@@ -89,30 +89,31 @@ async def test_hex7seg(dut):
 
 @cocotb.test()
 async def test_counter(dut):
-    # Reset the WHOLE system to ensure sub-modules are cleared
+    # Use the same reset sequence that works for the main FSM
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 2)
     dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2) # Give it a moment to stabilize
     
-    # Path: user_project -> game -> react_counter
     cnt = dut.user_project.game.react_counter
-    
     cnt.LD.value = 0
     cnt.UP.value = 1
     cnt.DW.value = 0
     
+    # Check after a few cycles
     for i in range(5):
         await RisingEdge(dut.clk)
     
-    assert int(cnt.Q.value) == 5, f"Counter failed, expected 5, got {cnt.Q.value}"
+    assert int(cnt.Q.value) == 5, f"Counter failed, got {cnt.Q.value}"
     dut._log.info("Counter verified")
 
 @cocotb.test()
 async def test_lfsr(dut):
-    # Reset the WHOLE system
+    # Use the same reset sequence
     dut.rst_n.value = 0
     await ClockCycles(dut.clk, 2)
     dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2)
     
     lfsr = dut.user_project.game.lfsr_inst
     
