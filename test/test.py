@@ -53,3 +53,10 @@ async def test_reaction_game(dut):
         
     assert (int(dut.uo_out.value) & SEG_DP) != 0, "Decimal point missing in DISPLAY"
     dut._log.info("Tests passed!")
+
+
+
+@cocotb.test()
+async def test_debug(dut):
+    # This will print all signals in the hierarchy to your console
+    dut._log.info(f"Signal structure: {dir(dut.user_project)}")
