@@ -68,62 +68,52 @@ async def test_debug(dut):
     dut._log.info(f"Signal structure: {dir(dut.user_project)}")
 
 
-
-
 @cocotb.test()
 async def test_hex7seg(dut):
-    # Mapping digit to the bit pattern from hex7seg.v
+    # Path: dut -> user_project -> game -> seg_enc
+    enc = dut.user_project.game.seg_enc
     expected = {
         0: 0b0111111, 1: 0b0000110, 2: 0b1011011, 3: 0b1001111,
         4: 0b1100110, 5: 0b1101101, 6: 0b1111101, 7: 0b0000111,
         8: 0b1111111, 9: 0b1101111
     }
-    # Path: user_project -> game -> seg_enc
-    enc = dut.user_project.game.seg_enc
     for digit, pattern in expected.items():
         enc.digit.value = digit
-        await ClockCycles(dut.clk, 1)
+        await RisingEdge(dut.clk)
         assert int(enc.segs.value) == pattern, f"7-seg pattern mismatch for {digit}"
     dut._log.info("Hex7Seg decoder verified")
 
-
-
-
 @cocotb.test()
 async def test_counter(dut):
-    # Path: user_project -> game -> react_counter
+    # Path: dut -> user_project -> game -> react_counter
     cnt = dut.user_project.game.react_counter
     
-    # Reset
-    dut.rst_n.value = 0
+    # Force reset the counter via the module inputs
+    cnt.rst.value = 1
     await ClockCycles(dut.clk, 2)
-    dut.rst_n.value = 1
-    
-    # Test Count Up
+    cnt.rst.value = 0
+    cnt.LD.value = 0
     cnt.UP.value = 1
     cnt.DW.value = 0
-    cnt.LD.value = 0
     
     for i in range(5):
         await RisingEdge(dut.clk)
     
-    assert int(cnt.Q.value) == 5, f"Counter failed to increment, got {cnt.Q.value}"
-    dut._log.info("Counter increment verified")
-
+    assert int(cnt.Q.value) == 5, f"Counter failed, got {cnt.Q.value}"
+    dut._log.info("Counter verified")
 
 @cocotb.test()
 async def test_lfsr(dut):
-    # Path: user_project -> game -> lfsr_inst
+    # Path: dut -> user_project -> game -> lfsr_inst
     lfsr = dut.user_project.game.lfsr_inst
     
-    dut.rst_n.value = 0
+    lfsr.rst.value = 1
     await ClockCycles(dut.clk, 2)
-    dut.rst_n.value = 1
+    lfsr.rst.value = 0
     
-    # Sample twice to ensure it advances
     val1 = int(lfsr.rnd.value)
-    await ClockCycles(dut.clk, 1)
+    await RisingEdge(dut.clk)
     val2 = int(lfsr.rnd.value)
     
     assert val1 != val2, "LFSR did not advance"
-    dut._log.info("LFSR randomization verified")
+    dut._log.info("LFSR verified")
