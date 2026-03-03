@@ -30,7 +30,7 @@ module tt_um_andreaan1414_top_reaction (
     wire [3:0] led_out;
     wire [7:0] seg_out;
 
-    reaction_game game (
+    reaction_fsm game (
         .clk    (clk),
         .rst    (rst),
         .btn_in (ui_in[7:4]),    
