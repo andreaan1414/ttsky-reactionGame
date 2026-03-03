@@ -2,6 +2,9 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, RisingEdge
 
+# Constants
+S_IDLE, S_WAIT, S_REACT, S_DISPLAY = 0, 1, 2, 3
+
 @cocotb.test()
 async def test_reaction_game(dut):
     # 1. Initialize inputs to a stable state BEFORE starting the clock
@@ -11,7 +14,7 @@ async def test_reaction_game(dut):
     dut.uio_in.value = 0
     
     # 2. Start clock
-    cocotb.start_soon(Clock(dut.clk, 40, units="ns").start())
+    cocotb.start_soon(Clock(dut.clk, 40, "ns").start())
 
     # 3. Perform Reset Sequence
     dut._log.info("Resetting...")
@@ -35,4 +38,23 @@ async def test_reaction_game(dut):
     assert int(fsm.state.value) == 1, f"Expected WAIT(1) after release, got {fsm.state.value}"
     dut._log.info("WAIT state verified")
     
-    # ... rest of your tests ...
+    # --- Test 03: WAIT -> REACT ---
+    # Wait for internal wait_done signal to trigger
+    await RisingEdge(fsm.wait_done) 
+    await ClockCycles(dut.clk, 2)
+    assert int(fsm.state.value) == S_REACT, f"Failed to reach REACT, currently {fsm.state.value}"
+    dut._log.info("REACT state verified")
+
+    # --- Test 04: REACT -> DISPLAY (Correct Press) ---
+    # Drive correct button: target_led is calculated in reaction_fsm.v
+    target = int(fsm.target_led.value)
+    dut.ui_in.value = target << 4  # Shift into ui_in[7:4]
+    await ClockCycles(dut.clk, 2)
+    
+    assert int(fsm.state.value) == S_DISPLAY, "Failed to reach DISPLAY after correct press"
+    dut._log.info("DISPLAY state verified")
+
+@cocotb.test()
+async def test_debug(dut):
+    # This will print all signals in the hierarchy to your console
+    dut._log.info(f"Signal structure: {dir(dut.user_project)}")
