@@ -68,9 +68,11 @@ async def test_debug(dut):
     dut._log.info(f"Signal structure: {dir(dut.user_project)}")
 
 
+
+
 @cocotb.test()
 async def test_hex7seg(dut):
-    # Path: dut -> user_project -> game -> seg_enc
+    # The absolute path from the top-level 'dut'
     enc = dut.user_project.game.seg_enc
     expected = {
         0: 0b0111111, 1: 0b0000110, 2: 0b1011011, 3: 0b1001111,
@@ -79,16 +81,15 @@ async def test_hex7seg(dut):
     }
     for digit, pattern in expected.items():
         enc.digit.value = digit
-        await RisingEdge(dut.clk)
-        assert int(enc.segs.value) == pattern, f"7-seg pattern mismatch for {digit}"
-    dut._log.info("Hex7Seg decoder verified")
+        # No clock needed for combinational logic, just a tiny delay
+        await cocotb.triggers.Timer(1, units="ns")
+        assert int(enc.segs.value) == pattern, f"7-seg mismatch for {digit}"
+    dut._log.info("Hex7Seg verified")
 
 @cocotb.test()
 async def test_counter(dut):
-    # Path: dut -> user_project -> game -> react_counter
     cnt = dut.user_project.game.react_counter
-    
-    # Force reset the counter via the module inputs
+    # Drive internal reset directly
     cnt.rst.value = 1
     await ClockCycles(dut.clk, 2)
     cnt.rst.value = 0
@@ -104,9 +105,8 @@ async def test_counter(dut):
 
 @cocotb.test()
 async def test_lfsr(dut):
-    # Path: dut -> user_project -> game -> lfsr_inst
     lfsr = dut.user_project.game.lfsr_inst
-    
+    # Drive internal reset directly
     lfsr.rst.value = 1
     await ClockCycles(dut.clk, 2)
     lfsr.rst.value = 0
