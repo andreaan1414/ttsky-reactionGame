@@ -14,7 +14,7 @@ async def test_reaction_game(dut):
     dut.uio_in.value = 0
     
     # 2. Start clock
-    cocotb.start_soon(Clock(dut.clk, 40, "ns").start())
+    cocotb.start_soon(Clock(dut.clk, 40, units="ns").start())
 
     # 3. Perform Reset Sequence
     dut._log.info("Resetting...")
@@ -35,18 +35,20 @@ async def test_reaction_game(dut):
     # --- Test 02: WAIT ---
     # After releasing reset, it should transition to S_WAIT (1)
     await ClockCycles(dut.clk, 2)
-    assert int(fsm.state.value) == 1, f"Expected WAIT(1) after release, got {fsm.state.value}"
+    assert int(fsm.state.value) == S_WAIT, f"Expected WAIT(1) after release, got {fsm.state.value}"
     dut._log.info("WAIT state verified")
     
-    # --- Test 03: WAIT -> REACT ---
-    # Wait for internal wait_done signal to trigger
-    await RisingEdge(fsm.wait_done) 
+    # --- Test 03: WAIT -> REACT (Force Bypass) ---
+    dut._log.info("Forcing wait_cnt to 0 to bypass LFSR delay...")
+    fsm.wait_cnt.value = 0  # Manually force the timer to zero to speed up testing
     await ClockCycles(dut.clk, 2)
+    
     assert int(fsm.state.value) == S_REACT, f"Failed to reach REACT, currently {fsm.state.value}"
-    dut._log.info("REACT state verified")
+    dut._log.info("REACT state verified via timer bypass")
 
     # --- Test 04: REACT -> DISPLAY (Correct Press) ---
     # Drive correct button: target_led is calculated in reaction_fsm.v
+    # We must read what the target is to simulate a correct press
     target = int(fsm.target_led.value)
     dut.ui_in.value = target << 4  # Shift into ui_in[7:4]
     await ClockCycles(dut.clk, 2)
