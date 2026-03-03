@@ -21,7 +21,7 @@ async def release_reset(dut):
 @cocotb.test()
 async def test_reaction_game(dut):
     # 'uut' is the instance in tb.v, 'game' is the instance in top_reaction.v
-    fsm = dut.uut.game 
+    fsm = dut.user_project.game 
     
     cocotb.start_soon(Clock(dut.clk, 40, units="ns").start())
 
