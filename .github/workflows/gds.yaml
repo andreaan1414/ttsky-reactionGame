@@ -17,7 +17,13 @@ jobs:
         uses: TinyTapeout/tt-gds-action@ttsky26a
         with:
           pdk: sky130A
-
+          
+      - name: Upload GDS artifacts
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                name: gds-files
+                path: runs/
   precheck:
     needs: gds
     runs-on: ubuntu-24.04
