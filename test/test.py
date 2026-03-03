@@ -205,7 +205,7 @@ async def test_04_wait_to_react_one_led(dut):
     assert (lit & (lit - 1)) == 0, \
         f"More than one LED lit: uio_out[7:4]=0x{lit:02X}"
 
-    state = int(dut.user_project.game.state.value)
+    state = int(dut.game.state.value)
     assert state == 2, f"Expected REACT (2), got state={state}"
     dut._log.info(f"PASS: single LED lit = 0x{lit:02X} in REACT state")
 
@@ -235,7 +235,7 @@ async def test_05_wrong_button_ignored(dut):
     await press_button(dut, wrong_btn)
     await ClockCycles(dut.clk, 3)
 
-    state = int(dut.user_project.game.state.value)
+    state = int(dut.game.state.value)
     assert state == 2, \
         f"Wrong button caused state change! Expected REACT (2), got {state}"
     dut._log.info(f"PASS: wrong button 0x{wrong_btn:02X} ignored, still in REACT")
@@ -259,7 +259,7 @@ async def test_06_correct_button_display(dut):
     await press_button(dut, correct_btn)
     await ClockCycles(dut.clk, 3)
 
-    state = int(dut.user_project.game.state.value)
+    state = int(dut.game.state.value)
     assert state == 3, \
         f"Expected DISPLAY (3) after correct button, got state={state}"
     dut._log.info(f"PASS: correct button 0x{correct_btn:02X} → DISPLAY")
