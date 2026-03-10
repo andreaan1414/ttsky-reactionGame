@@ -13,7 +13,7 @@ PROJECT_SOURCES += lfsr.v
 PROJECT_SOURCES += flash.v
 PROJECT_SOURCES += hex7seg.v
 PROJECT_SOURCES += reaction_fsm.v
-PROJECT_SOURCES += top_reaction.v
+PROJECT_SOURCES += tt_um_andreaan1414_top_reaction.v
 
 # Speed-up timing for simulation
 COMPILE_ARGS += -DTICK_PERIOD=100
