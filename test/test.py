@@ -6,7 +6,7 @@ from cocotb.triggers import ClockCycles, RisingEdge
 S_IDLE, S_WAIT, S_REACT, S_DISPLAY = 0, 1, 2, 3
 
 @cocotb.test()
-async def test_reaction_game(dut):
+async def tt_um_andreaan1414_top_reaction(dut):
     # 1. Initialize inputs to a stable state BEFORE starting the clock
     dut.rst_n.value = 1  # Deassert reset first
     dut.ena.value = 0
