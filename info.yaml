@@ -16,17 +16,16 @@ project:
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
-  source_files:
-    - "project.v"
-    - "fa.v"
-    - "mux2to1.v"
-    - "add5.v"
-    - "countUD5L.v"
-    - "lfsr.v"
-    - "flash.v"
-    - "reaction_fsm.v"
-    - "tt_um_andreaan1414_top_reaction.v"
-    - "hex7seg.v"
+source_files:
+  - "fa.v"
+  - "mux2to1.v"
+  - "add5.v"
+  - "countUD5L.v"
+  - "lfsr.v"
+  - "flash.v"
+  - "hex7seg.v"
+  - "reaction_fsm.v"
+  - "tt_um_andreaan1414_top_reaction.v"
 
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
