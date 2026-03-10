@@ -5,6 +5,7 @@
 
 `default_nettype none
 
+
 module tt_um_andreaan1414_top_reaction (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
