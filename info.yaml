@@ -25,7 +25,7 @@ project:
     - "lfsr.v"
     - "flash.v"
     - "reaction_fsm.v"
-    - "top_reaction.v"
+    - "tt_um_andreaan1414_top_reaction.v"
     - "hex7seg.v"
 
 
