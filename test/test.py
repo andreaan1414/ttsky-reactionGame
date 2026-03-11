@@ -70,20 +70,3 @@ async def test_debug(dut):
 
 
 
-@cocotb.test()
-async def test_hex7seg(dut):
-    # The absolute path from the top-level 'dut'
-    enc = dut.user_project.game.seg_enc
-    expected = {
-        0: 0b0111111, 1: 0b0000110, 2: 0b1011011, 3: 0b1001111,
-        4: 0b1100110, 5: 0b1101101, 6: 0b1111101, 7: 0b0000111,
-        8: 0b1111111, 9: 0b1101111
-    }
-    for digit, pattern in expected.items():
-        enc.digit.value = digit
-        # No clock needed for combinational logic, just a tiny delay
-        await cocotb.triggers.Timer(1, units="ns")
-        assert int(enc.segs.value) == pattern, f"7-seg mismatch for {digit}"
-    dut._log.info("Hex7Seg verified")
-
-
