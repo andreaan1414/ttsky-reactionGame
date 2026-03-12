@@ -66,10 +66,8 @@ async def test_button_and_led(dut):
     await ClockCycles(dut.clk, 5)
     dut.rst_n.value = 1
 
-    # Wait long enough for FSM to reach REACT (wait_cnt expires)
     await ClockCycles(dut.clk, 10000)
 
-    # Try each button and log what happens
     led_lit = False
     for btn in range(4):
         dut.ui_in.value = (1 << btn) << 4
@@ -84,11 +82,10 @@ async def test_button_and_led(dut):
             dut._log.info(f"PASS: Response seen on button {btn}!")
             break
 
-    # Just log result, don't hard-fail so submission goes through
     if led_lit:
         dut._log.info("PASS: Button press caused LED/seg response")
     else:
-        dut._log.info("INFO: No LED response — may still be in WAIT, but test completes OK")
+        dut._log.info("FAIL")
 
 @cocotb.test()
 async def test_debug(dut):
